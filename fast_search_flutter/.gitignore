@@ -1,0 +1,113 @@
+# Miscellaneous
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
+
+# IntelliJ related
+*.iml
+*.ipr
+*.iws
+.idea/
+
+
+# Flutter/Dart/Pub related
+**/doc/api/
+**/ios/Flutter/.last_build_id
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+/build/
+/coverage/
+.packages
+ephemeral/
+
+# ffigen 等の生成コード・キャッシュ
+*.g.dart
+
+# シンボリックリンクやログ
+*.log
+
+# Symbolication related
+app.*.symbols
+
+# Obfuscation related
+app.*.map.json
+
+# Android Studio will place build artifacts here
+/android/app/debug
+/android/app/profile
+/android/app/release
+
+# Widget Preview related
+.widget_preview/
+
+# ==============================================================================
+# C++ / Native / CMake / Windows ビルド関連
+# ==============================================================================
+# CMake ビルド生成物・キャッシュ
+CMakeCache.txt
+CMakeFiles/
+CMakeUsers.txt
+cmake_install.cmake
+CMakeLists.txt.user
+makefile
+Targets.cmake
+
+# Visual Studio / MSBuild 関連ファイル・キャッシュ
+.vs/
+*.vcxproj.user
+*.vcxproj.fileuser
+*.design.json
+*.cache
+*.suo
+*.user
+*.userosv
+*.sln.docstates
+
+# C++ コンパイル出力・バイナリ（DLL, LIB, EXE, OBJ 等）
+*.obj
+*.o
+*.lo
+*.la
+*.al
+*.libs/
+*.queries
+*.tlog
+*.lastbuildstate
+*.idb
+*.pdb
+*.pch
+*.res
+*.ilk
+*.exe
+*.dll
+*.so
+*.dylib
+*.lib
+*.exp
+
+# C++ パッケージマネージャ関連（vcpkg / Conan を使用する場合）
+vcpkg_installed/
+.conan/
+
+# ==============================================================================
+# IDE / エディタ 関連
+# ==============================================================================
+# VS Code
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+*.code-workspace
