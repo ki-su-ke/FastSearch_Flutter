@@ -106,3 +106,14 @@ install(DIRECTORY "${PROJECT_BUILD_DIR}/${FLUTTER_ASSET_DIR_NAME}"
 install(FILES "${AOT_LIBRARY}" DESTINATION "${INSTALL_BUNDLE_DATA_DIR}"
   CONFIGURATIONS Profile;Release
   COMPONENT Runtime)
+
+# windows/CMakeLists.txt (最後に追加)
+add_subdirectory(../native native_build)
+
+# Install FileSearchEngine DLL
+install(FILES "$<TARGET_FILE:FileSearchEngine>"
+  DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
+  COMPONENT Runtime)
+
+# 再リンク  
+target_link_libraries(${BINARY_NAME} PRIVATE FileSearchEngine)
