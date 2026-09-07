@@ -77,13 +77,18 @@ FastSearch_with_Flutter/
 │
 ├── lib/                            <-- 【Dart/Flutter領域】アプリ UI & ロジック
 │   ├── main.dart                   <-- アプリ起動エントリーポイント
-│   ├── native_bindings.dart        <-- FFIバインディング定義(ffigenで生成)
+│   ├── fast_search_engine_bindings.dart    <-- FFIバインディング定義(ffigenで生成)
 │   └── src/
 │       ├── ffi/
-│       │   └── search_bridge.dart   <-- (新規作成) メモリ解放等のラップ処理
+│       │   └── search_engine_wrapper.dart   <-- メモリ解放等のラップ処理
 │       ├── services/
 │       │   └── search_service.dart  <-- (新規作成) Isolateを使った非同期実行層
 │       └── ui/
+│           ├── widgets/
+│           │   ├── directory_selector.dart  <-- ディレクトリ選択ウィジェット
+│           │   ├── search_input.dart  <-- 検索入力ウィジェット
+│           │   └── result_list.dart  <-- 検索結果リストウィジェット
+│           |
 │           └── search_page.dart     <-- 検索画面UI
 │
 ├── pubspec.yaml                     <-- 依存パッケージ（ffi, ffigen等）管理
@@ -135,24 +140,35 @@ native_bindings.dart: Dart側からDLLの関数ポインタをロード・定義
 
 search_service.dart: FFI呼び出しを Isolate.run() でバックグラウンドスレッド化し、UIを止めずに検索を実行させるサービスクラス。
 
+### 設計で気を付けた点
+- Flutter側の構成を、Dart FFIで扱いやすいように橋渡しするwrapper層、UIとデータの中間で処理を行うサービス層、UI層にわけて責務を分離するようにした
+- 今回はそれほど重要ではないのかもしれないが、UIウィジェットも責務分離の観点から分割しておくようにした
+- Windows固有の機能を使うデスクトップアプリということで、他のプラットフォームの設定等はバッサリ切った
+- Flutterでもローカルストレージ的なものがあるらしいということで、検索履歴などをそこで扱うようにした
+
+
 ### 苦労した点
 - ffigenの設定
     - ffigenの記述方法に揺れがあるようで、正解にたどり着くまでに苦労した。将来も変わる可能性が高そう。
     - analysis_options.yaml内で呼んでいるformatterでエラーが発生して生成処理が進まないことが分かった。formatterなので、一時的に無効化して生成させる必要があった。
-    - 純粋にC互換で定義しているなら、ffigenのcompile-optでは - 'c' を選ぶ方が素直に生成できる模様。
-    - 今回はffigenを使うことにこだわった(AIが業界標準だというので)が、規模が小さいうちは自分で書いちゃう方が速いくらいだと思いました。だって当のパートナーAIが音を上げましたから。要はエラーメッセージを見て、clangが何を問題としていて、その結果何を取りこぼしてるのかを追跡していく作業が必要だったということです。
+    - 純粋にC互換で定義しているなら、ffigenのcompile-optでは C言語用 を選ぶ方が素直に生成できる模様。
+    - 今回はffigenを使うことにこだわった(AIが業界標準だというので)が、規模が小さいうちは自分で書いちゃう方が速いくらいだと思った。当のパートナーAIが音を上げたし。要はエラーメッセージを見て、clangが何を問題としていて、その結果何を取りこぼしてるのかを追跡していく作業が必要だった。
 
-- UIの方に行くほどめっちゃコメント入れながら進めました。
+- デバッグ実行時のためのログ機能追加: エラーメッセージがすぐ消えてしまう・・・ということでlogger.dartを作成してエラー詳細をファイルに保存。
+- Isolateエラー修正: DynamicLibraryがIsolate間で渡せない問題をFuture.microtask()で解決。これは盲点だった。
+
+- UIの方に行くほどめっちゃコメント入れながら進めた。
 
 ### 今後の課題
 
 これは実験プロジェクトですので、デスクトップアプリなら他にも選択肢があるわけです。  
-ですからこれを大いに発展させていこうとは考えていませんが、Windows固有の機能を使っている以上マルチプラットフォームにはこのまま移行できません。  
+ですから、今後これを大いに発展させていこうとは考えていませんが、Windows固有の機能を使っている以上マルチプラットフォームにはこのまま移行できません。  
 どうせ移行するなら、もっとマルチプラットフォームに適した言語を使いたいよねって感じになると思うんで、同一のテーマで別のものをやろうかなとは考えています。自分用ツールとして。
 
 ----
 
-## FFIgen
+## Flutter / FFIgen
+コマンドメモ
 
 ```bash
 dart run ffigen --config ffigen.yaml
@@ -171,7 +187,7 @@ flutter build windows
 ## Run
 
 ```bash
-flutter run
+flutter run windows
 ```
 
 ----
@@ -179,7 +195,7 @@ flutter run
 ## Debug
 
 ```bash
-flutter run --debug
+flutter run -d windows
 ```
 
 ----
@@ -187,7 +203,7 @@ flutter run --debug
 ## Release
 
 ```bash
-flutter run --release
+flutter run windows --release
 ```
 
 ----

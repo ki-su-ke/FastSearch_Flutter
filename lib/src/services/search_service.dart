@@ -1,16 +1,19 @@
-import 'dart:isolate';
 import '../ffi/search_engine_wrapper.dart';
 
+
+//////////////////////////////////////////////////////
 /// 検索サービスクラス
 /// Isolateを使用してバックグラウンドで検索を実行し、UIフリーズを防止する
+/// ※非同期処理をIsolate から Future へ変更。理由はDyanmic LibraryをIsolate間で渡せないため。
 class SearchService {
-  // 検索エンジンのラッパーインスタンス
+
+  /// 検索エンジンのラッパーインスタンス
   late final SearchEngineWrapper _engine;
-  
-  // サービスが初期化済みかどうかのフラグ
+
+  /// サービスが初期化済みかどうかのフラグ
   bool _isInitialized = false;
-  
-  // 現在インデックス化されているドライブ（例: "C:"）
+
+  /// 現在インデックス化されているドライブ（例: "C:"）
   String? _currentDrive;
 
   /// コンストラクタ
@@ -33,7 +36,7 @@ class SearchService {
   /// [path] フルパス
   /// 戻り値: ドライブ文字（例: "C:"）
   String _extractDriveLetter(String path) {
-    if (path.isEmpty || path.length < 2) {
+    if(path.isEmpty || path.length < 2) {
       return '';
     }
     // Windowsパス形式 "C:\..." からドライブ文字を抽出
@@ -47,18 +50,21 @@ class SearchService {
   /// [driveLetter] ドライブ文字（例: "C:"）
   /// 戻り値: 成功した場合はtrue、失敗した場合はfalse
   Future<bool> buildIndexAsync(String driveLetter) async {
-    if (!_isInitialized) {
-      throw StateError('SearchService is not initialized');
+    if(!_isInitialized) {
+      throw StateError('SearchService is not initilaized');
     }
 
-    // Isolateを使用してバックグラウンドでインデックス構築を実行
-    final success = await Isolate.run(() => _engine.buildIndex(driveLetter));
-    
+    // Futureを使用して非同期実行（UIスレッドをブロックしない）
+    // IsolateはDynamicLibraryを渡せないため使用しない
+    // DynamicLibraryはネイティブリソースを保持しており、Isolate間でシリアライズできないため
+    // 代わりにFuture.microtaskを使用してイベントループの次のティックで実行する
+    final success = await Future.microtask(() => _engine.buildIndex(driveLetter));
+
     // 成功した場合、現在のドライブを更新
     if (success) {
       _currentDrive = driveLetter;
     }
-    
+
     return success;
   }
 
@@ -68,27 +74,28 @@ class SearchService {
   /// 戻り値: 成功した場合はtrue、失敗した場合はfalse
   Future<bool> ensureIndexForPathAsync(String path) async {
     final drive = _extractDriveLetter(path);
-    if (drive.isEmpty) {
+    if(drive.isEmpty) {
       return false;
     }
 
     // ドライブが変更された場合のみインデックス再構築
-    if (_currentDrive != drive) {
+    if(_currentDrive != drive) {
       return await buildIndexAsync(drive);
     }
-    
+
     return true; // すでにインデックス化されている
   }
 
   /// インデックス内のファイル数を取得する（非同期）
   /// 戻り値: ファイル数
   Future<int> getFileCountAsync() async {
-    if (!_isInitialized) {
+    if(!_isInitialized) {
       throw StateError('SearchService is not initialized');
     }
-
-    // Isolateを使用してバックグラウンドでファイル数取得を実行
-    return await Isolate.run(() => _engine.getFileCount());
+    
+    // Futureを使用して非同期実行（UIスレッドをブロックしない）
+    // IsolateはDynamicLibraryを渡せないため使用しない
+    return await Future.microtask(() => _engine.getFileCount());
   }
 
   /// ファイル検索を実行する（非同期）
@@ -99,17 +106,16 @@ class SearchService {
   Future<List<SearchResultItemData>> searchAsync(
     String keyword,
     String basePath,
-    int maxResults,
+    int maxResults
   ) async {
-    if (!_isInitialized) {
+    if(!_isInitialized) {
       throw StateError('SearchService is not initialized');
     }
 
-    // Isolateを使用してバックグラウンドで検索を実行
-    // UIスレッドをブロックせずに大量のファイル検索が可能
-    return await Isolate.run(
-      () => _engine.search(keyword, basePath, maxResults),
-    );
+    // Futureを使用して非同期実行（UIスレッドをブロックしない）
+    // IsolateはDynamicLibraryを渡せないため使用しない
+    // 代わりにFuture.microtaskを使用してイベントループの次のティックで実行する
+    return await Future.microtask(() => _engine.search(keyword, basePath, maxResults));
   }
 
   /// 現在インデックス化されているドライブを取得する
@@ -118,7 +124,7 @@ class SearchService {
 
   /// サービスを破棄し、リソースを解放する
   void dispose() {
-    if (_isInitialized) {
+    if(_isInitialized) {
       _engine.dispose();
       _isInitialized = false;
       _currentDrive = null;
