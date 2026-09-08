@@ -30,6 +30,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  ffi: ^2.1.0  # FFIを使うための基本パッケージ
+  file_selector: ^1.0.3  # フォルダ選択ダイアログ用
+  shared_preferences: ^2.2.2  # ディレクトリ履歴保存用
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -38,13 +41,15 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  ffigen: ^11.0.0 # ffigenは開発用オンリーとして追加
+  mocktail: ^1.0.4 # テスト用モックライブラリ
 
-  # The "flutter_lints" package below contains a set of recommended lints to
-  # encourage good coding practices. The lint set provided by the package is
-  # activated in the `analysis_options.yaml` file located at the root of your
-  # package. See that file for information about deactivating specific lint
-  # rules and activating additional ones.
-  flutter_lints: ^6.0.0
+# The "flutter_lints" package below contains a set of recommended lints to
+# encourage good coding practices. The lint set provided by the package is
+# activated in the `analysis_options.yaml` file located at the root of your
+# package. See that file for information about deactivating specific lint
+# rules and activating additional ones.
+flutter_lints: ^6.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

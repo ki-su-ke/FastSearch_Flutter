@@ -1,0 +1,42 @@
+name: FastSearchEngineBindings
+description: FFI bindings for FastSearchEngine
+output: lib/fast_search_engine_bindings.dart
+
+# 警告(Warning)があっても生成をスキップさせない設定
+ignore-source-errors: true
+
+llvm-path:
+  - 'C:/Program Files/Microsoft Visual Studio/18/Community/VC/Tools/Llvm/x64'
+
+headers:
+  entry-points:
+    - 'native/src/SearchEngine_c_api.h'
+
+# ClangへC++ヘッダーとして解析させるオプションを追加
+compiler-opts:
+  - '--target=x86_64-pc-windows-msvc'
+  - '-x'
+  # - 'c++'
+  - 'c'
+  # - '-std=c++17'
+  - '-fms-extensions'
+  - '-fms-compatibility'
+  # - '-fms-compatibility-version=19.00'
+  - '-Wno-pragma-once-outside-header'
+  # - '-Wno-ignored-attributes'
+  # - '-DFILESEARCHENGINE_EXPORTS' # これは外さないとダメそう
+
+# フィルター（一言一句ズレがあっても確実に拾うため正規表現で広めに指定）
+functions:
+  include:
+    - 'Engine_.*'
+    # - '.*'
+structs:
+  include:
+    - 'SearchResult.*'
+    - 'SearchResults'
+    # - '.*'
+typedefs:
+  include:
+    - 'SearchEngineHandle'
+    # - '.*'

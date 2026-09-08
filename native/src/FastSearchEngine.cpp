@@ -1,4 +1,4 @@
-#include "pch.h"
+#include "framework.h"
 #include <winioctl.h>
 #include "FastSearchEngine.h"
 #include <vector>
@@ -6,7 +6,6 @@
 #include <algorithm>
 #include <cwctype>
 #include <numeric>
-//#include <fileapi.h>
 
 #define PRESERVE_CAPACITY 100000 // 予想されるファイル数に応じて適切に調整
 
