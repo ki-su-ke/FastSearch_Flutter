@@ -42,6 +42,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   ffigen: ^11.0.0 # ffigenは開発用オンリーとして追加
+  mocktail: ^1.0.4 # テスト用モックライブラリ
 
 # The "flutter_lints" package below contains a set of recommended lints to
 # encourage good coding practices. The lint set provided by the package is
@@ -49,30 +50,6 @@ dev_dependencies:
 # package. See that file for information about deactivating specific lint
 # rules and activating additional ones.
 flutter_lints: ^6.0.0
-
-# ffigen:
-#   name: FastSearchEngineBindings
-#   description: FFI bindings for FastSearchEngine
-#   output: lib/fast_search_engine_bindings.dart
-#   llvm-path:
-#     - 'C:/Program Files/Microsoft Visual Studio/18/Community/VC/Tools/Llvm/x64'
-#   headers:
-#     entry-points:
-#       - 'native/src/SearchEngine_c_api.h'
-#     # include-directories:
-#     #   - 'native/src'
-#   functions:
-#     include:
-#       - 'Engine_.*'
-#   structs:
-#     include:
-#       - 'SearchResultItem'
-#       - 'SearchResults'
-#   typedefs:
-#     include:
-#       - 'SearchEngineHandle'
-
-
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
