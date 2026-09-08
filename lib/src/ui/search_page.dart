@@ -41,6 +41,9 @@ class _SearchPageState extends State<SearchPage> {
   bool _isLoading = false;
   bool _isInitializing = false;
   bool _isBuildingIndex = false;
+
+  // _searchServiceの初期化フラグ
+  bool _isSearchServiceInitialized = false;
   
   // ファイル数
   int _fileCount = 0;
@@ -72,6 +75,7 @@ class _SearchPageState extends State<SearchPage> {
       
       // 検索サービスを初期化
       _searchService = SearchService();
+      _isSearchServiceInitialized = true;
       
       // Cドライブのインデックスを構築
       await _buildIndex('C:');
@@ -92,7 +96,10 @@ class _SearchPageState extends State<SearchPage> {
   @override
   void dispose() {
     // リソースを解放
-    _searchService.dispose();
+    if(_isSearchServiceInitialized) {
+      _searchService.dispose();
+    }
+    
     _keywordController.dispose();
     _maxResultsController.dispose();
     Logger.instance.dispose();
